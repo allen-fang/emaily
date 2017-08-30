@@ -20,15 +20,14 @@ passport.deserializeUser((id, done) => {
 	});
 });
 
-
-
 // Creates a new instance of Google Strategy. Pass in config in instance to create how users login.
 passport.use(
 	new GoogleStrategy(
 		{
 			clientID: keys.googleClientID,
 			clientSecret: keys.googleClientSecret,
-			callbackURL: '/auth/google/callback'
+			callbackURL: '/auth/google/callback',
+			proxy: true
 		},
 		(accessToken, refreshToken, profile, done) => {
 			User.findOne({ googleID: profile.id }).then(exisitingUser => {
