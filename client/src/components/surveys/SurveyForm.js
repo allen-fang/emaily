@@ -4,33 +4,11 @@ import { reduxForm, Field } from 'redux-form';
 import { Link } from 'react-router-dom';
 import SurveyField from './SurveyField';
 import validateEmails from '../../utils/validateEmails';
-
-const FIELDS = [
-	{
-		label: 'Survey Title',
-		name: 'title',
-		noValueError: 'You must provide a title!'
-	},
-	{
-		label: 'Subject Line',
-		name: 'subject',
-		noValueError: 'You must provide a subject!'
-	},
-	{
-		label: 'Email Body',
-		name: 'body',
-		noValueError: 'You must provide a body!'
-	},
-	{
-		label: 'Recipient List',
-		name: 'emails',
-		noValueError: 'You must provide email(s)!'
-	}
-];
+import formFields from './formFields';
 
 class SurveyForm extends Component {
 	renderFields() {
-		return _.map(FIELDS, ({ label, name }) => {
+		return _.map(formFields, ({ label, name }) => {
 			return (
 				<Field
 					key={name}
@@ -45,7 +23,7 @@ class SurveyForm extends Component {
 	render() {
 		return (
 			<div>
-				<form onSubmit={this.props.handleSubmit(values => console.log(values))}>
+				<form onSubmit={this.props.handleSubmit(this.props.onSurveySubmit)}>
 					{this.renderFields()}
 					<Link to="/surveys" className="red btn-flat white-text">
 						Cancel
@@ -66,10 +44,10 @@ function validate(values) {
 
 	// put this first so that noValueError overrides the error message.
 	// validate runs automatically so values.emails is undef, so make it an empty string otherwise.
-	errors.emails = validateEmails(values.emails || '');
+	errors.recipients = validateEmails(values.recipients || '');
 
 	// generalized field validation
-	_.each(FIELDS, ({ name, noValueError }) => {
+	_.each(formFields, ({ name, noValueError }) => {
 		// use [] for determining values at runtime!!!
 		// use . for looking at literally NAME property, not a variable name
 		if (!values[name]) {
@@ -85,5 +63,6 @@ function validate(values) {
 export default reduxForm({
 	// validate function ran every time form is submit
 	validate,
-	form: 'surveyForm'
+	form: 'surveyForm',
+	destroyOnUnmount: false
 })(SurveyForm);
